@@ -1,5 +1,6 @@
 use image::ColorType;
-use image::png::Encoder;
+use image::ImageEncoder;
+use image::codecs::png::PngEncoder;
 use num::Complex;
 use std::env;
 use std::fs::File;
@@ -145,8 +146,8 @@ fn render(
 fn write_image(filename: &str, pixels: &[u8], bounds: (usize, usize)) -> Result<(), std::io::Error> {
     let output = File::create(filename)?;
 
-    let encoder = PNGEncoder::new(output);
-    encoder.encode(&pixels, bounds.0 as u32, bounds.1 as u32, ColorType::Gray(8))?;
+    let encoder = PngEncoder::new(output);
+    encoder.write_image(&pixels, bounds.0 as u32, bounds.1 as u32, ColorType::L8).unwrap();
 
     Ok(())
 }
@@ -156,7 +157,7 @@ fn main() {
 
     if args.len() != 5 {
         eprintln!("Usage: {} FILE PIXELS UPPERLEFT LOWERRIGHT", args[0]);
-        eprintln!("Example: {} mandel.png 1000x750 -1.20,0.35, -1,0.20", args[0]);
+        eprintln!("Example: {} mandel.png 1000x750 -1.20,0.35 -1,0.20", args[0]);
         std::process::exit(1);
     }
 
